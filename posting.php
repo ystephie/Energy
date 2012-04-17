@@ -22,7 +22,7 @@ $longitude = $_POST["longitude"];
    <br>
    		
 </div>
-<div id="main_results">
+<div id="main_result">
 	<h1 align="center"> Energy Calculator </h1>
 	<p align="center"> Results are in</p>
 	<div align="center" class="result">

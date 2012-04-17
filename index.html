@@ -8,54 +8,85 @@
     <script type="text/javascript"
       src="http://maps.googleapis.com/maps/api/js?key=AIzaSyAZU3-xCpzg-ru4WOCzl1n9RNssVY9j55A&sensor=false">
     </script>
-    <script type="text/javascript">
+	<script type="text/javascript">
+		var focusCircle;
+		var focusInfoWindow;
+		
 		function initialize() {
-       		var myOptions = {
-            	center: new google.maps.LatLng(37.8717, -122.2728),
-                zoom: 14,
-                mapTypeId: google.maps.MapTypeId.ROADMAP
-            };
-            var map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
-            google.maps.event.addListener(map, 'click', 
-       			function(event) { 
-            		placeMarker(event.latLng, map);
-                }
-            );
-       	}
-        function placeMarker(position, map) {
-        	var marker = new google.maps.Marker({
-            	position: position,
-               	map: map,
-            	draggable: true,
-                title: "Latitude: " + position.lat() + "; Longitude: " + position.lng()
-          	});
+	    	var myOptions = {
+	    		center: new google.maps.LatLng(37.8717, -122.2728),
+	      		zoom: 14,
+	      		mapTypeId: google.maps.MapTypeId.ROADMAP
+	    	};
+	    	var map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
+	    	google.maps.event.addListener(map, 'click', 
+	    		function(event) { 
+	    			placeMarker(event.latLng, map);
+	    		}
+	    	);
+	    	focusCircle = new google.maps.Circle({
+				radius: 800,
+				clickable: false,
+				map: map,
+				visible: false
+			});
+		}
+		
+		function placeMarker(position, map) {
+			if (focusInfoWindow) {
+				focusInfoWindow.close();
+			}
+			var marker = new google.maps.Marker({
+				position: position,
+			    map: map,
+			    draggable: true,
+			    title: "Latitude: " + position.lat() + "; Longitude: " + position.lng()
+			});
+			var contentString = "Pending...";
+			var infoWindow = new google.maps.InfoWindow({
+				content: contentString
+			});
+			focusInfoWindow = infoWindow;
+			focusCircle.bindTo("center", marker, "position");
+			focusCircle.setVisible(true);
+			infoWindow.open(map,marker);
+			google.maps.event.addListener(marker, "click", 
+				function() {
+					if (focusInfoWindow) {
+						focusInfoWindow.close();
+					}
+					infoWindow.open(map,marker);
+					focusInfoWindow = infoWindow;
+					focusCircle.bindTo("center", marker, "position");
+					focusCircle.setVisible(true);
+				}
+			);
+			google.maps.event.addListener(marker, "rightclick", 
+				function (marker) {
+					this.setMap(null);
+					focusInfoWindow.close();
+					infoWindow.close();
+					infoWindow.setMap(null);
+					focusCircle.setVisible(false);
+				}
+			);
+			map.panTo(position);
 			
-           	var contentString = "info goes here!"
-            var infoWindow = new google.maps.InfoWindow({
-              	content: contentString
-           	});
-            var circle = new google.maps.Circle({
-                radius: 800,
-                map: map
-            });
-            circle.bindTo("center", marker, "position");
-            infoWindow.open(map,marker);
-            google.maps.event.addListener(infoWindow, "closeclick", 
-            	function () {
-           			circle.setVisible(false);
-           	});
-           	google.maps.event.addListener(marker, "click", 
-            	function() {
-                	infoWindow.open(map,marker);
-                    circle.setVisible(true);
-            });
-           	google.maps.event.addListener(marker, "rightclick", 
-                function (marker) {
-                	this.setMap(null);
-                    circle.setMap(null);
-                    infoWindow.setMap(null);
-     		});              
-            map.panTo(position);
+			if (window.XMLHttpRequest) {// code for IE7+, Firefox, Chrome, Opera, Safari
+				xmlhttp=new XMLHttpRequest();
+			} else { // code for IE6, IE5
+				xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+			}
+			xmlhttp.onreadystatechange=
+				function() {
+			  		if (xmlhttp.readyState==4 && xmlhttp.status==200) {
+			    		contentString = xmlhttp.responseText;
+			    		infoWindow.setContent(contentString);
+			    	}
+			  	}
+			xmlhttp.open("POST", "request_house_data.php", true);
+			xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+			xmlhttp.send("latitude=" + position.lat() + "&longitude=" + position.lng());
 		}
     </script>
 </head>
@@ -65,8 +96,16 @@
    <h3 align="center">Options to desplay on info windows</h3>
    <br/>
    <form method="post" action="address.php">
-        <input type="checkbox" name="bedrooms" value="Bedrooms"> I want to know the number of bedrooms within a half mile radius<br/><br/>
-        <input type="checkbox" name="energy" value="AveEnergy"> I want to know the average energy of houses within a half mile radius<br/><br/>   
+   		<div>
+   			Radius (mi): <input type="text" name="radius" id="radius" value="1"/> <br/><br/>
+        </div>
+   		<input type="checkbox" name="address" value="address"> Address<br/><br/>
+        <input type="checkbox" name="house_size" value="house_size"> House Size<br/><br/>
+        <input type="checkbox" name="lot_size" value="lot_size"> Lot Size<br/><br/>
+        <input type="checkbox" name="bedrooms" value="bedrooms"> Number of Bedrooms for the closest house<br/><br/>
+        <input type="checkbox" name="bathrooms" value="bathrooms"> Number of Bedrooms for the closest house<br/><br/>
+        <input type="checkbox" name="year_built" value="year_built"> Year the closest house was built<br/><br/>
+        <input type="checkbox" name="bedrooms" value="Bedrooms"> Number of bedrooms within a half mile radius<br/><br/>   
         <input type="submit" value="Submit" name="Submit"/>
    </form>
    <br>
@@ -80,6 +119,7 @@
 		<form method="post" action="posting.php">
 			Longitude: <input type="text" name="longitude" /> 
 			Latitude: <input type="text" name="latitude" />
+            Address: <input type="text" name="address" />
 			<input type="submit" value ="Submit" name="Submit"/>
 		</form>
 	</div></center>

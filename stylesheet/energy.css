@@ -3,22 +3,24 @@
 
 /* divs */
 #main{
-	padding-left:30%;
+	padding-left:330px;
 	padding-right:auto;
 	float:left;
 }
 #main_result{
-	padding-left:30%;
+	padding-left:245px;
 	padding-right:auto;
 	float:left;
 }
+
 
 /* tables */
 	
 .result{
 	font-family:"Trebuchet MS", Arial, Helvetica, sans-serif;
-	width:100%;
-	border-collapse:collapse
+	background-color:#F3FFEE;
+	width:900px;
+	text-align:center;
 }
 .result td, .result th 
 {
