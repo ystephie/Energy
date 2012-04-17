@@ -10,18 +10,12 @@ $longitude = $_POST["longitude"];
 <title>Energy Calculator</title>
 </head>
 <body style="background: rgb(255, 255, 255) url(images/012008_background.jpg) repeat scroll top left; margin: 0pt;">
-
+<!--
 <div id="options">
-   <h3 align="center">Options to desplay on info windows</h3>
-   <br/>
-   <form method="post" action="address.php">
-        <input type="checkbox" name="bedrooms" value="Bedrooms"> I want to know the number of bedrooms within a half mile radius<br/><br/>
-        <input type="checkbox" name="energy" value="AveEnergy"> I want to know the average energy of houses within a half mile radius<br/><br/>   
-        <input type="submit" value="Submit" name="Submit"/>
-   </form>
-   <br>
+   <h3 align="center"><br><br></h3>
    		
 </div>
+-->
 <div id="main_result">
 	<h1 align="center"> Energy Calculator </h1>
 	<p align="center"> Results are in</p>

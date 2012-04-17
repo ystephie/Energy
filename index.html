@@ -8,6 +8,7 @@
     <script type="text/javascript"
       src="http://maps.googleapis.com/maps/api/js?key=AIzaSyAZU3-xCpzg-ru4WOCzl1n9RNssVY9j55A&sensor=false">
     </script>
+    <script type="text/javascript" src="js/incrementing.js"></script>
 	<script type="text/javascript">
 		var focusCircle;
 		var focusInfoWindow;
@@ -25,11 +26,11 @@
 	    		}
 	    	);
 	    	focusCircle = new google.maps.Circle({
-				radius: 800,
 				clickable: false,
 				map: map,
 				visible: false
 			});
+			updateCircleRadius();
 		}
 		
 		function placeMarker(position, map) {
@@ -86,7 +87,12 @@
 			  	}
 			xmlhttp.open("POST", "request_house_data.php", true);
 			xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
-			xmlhttp.send("latitude=" + position.lat() + "&longitude=" + position.lng());
+			var radius = document.getElementById("radius").value;
+			xmlhttp.send("latitude=" + position.lat() + "&longitude=" + position.lng() + "&radius=" + radius + "&bedrooms" + document.getElementById("bedrooms").checked + "&houses=" + document.getElementById("houses").checked + "&address=" + document.getElementById("address").checked + "&house_size=" + document.getElementById("house_size").checked + "&lot_size=" + document.getElementById("lot_size").checked + "&br=" + document.getElementById("br").checked + "&bathrooms=" + document.getElementById("bathrooms").checked + "&year_built=" + document.getElementById("year_built").checked);
+		}
+		
+		function updateCircleRadius() {
+			focusCircle.setRadius(document.getElementById("radius").value * 1609.344);
 		}
     </script>
 </head>
@@ -95,19 +101,33 @@
 <div id="options">
    <h3 align="center">Options to desplay on info windows</h3>
    <br/>
-   <form method="post" action="address.php">
    		<div>
-   			Radius (mi): <input type="text" name="radius" id="radius" value="1"/> <br/><br/>
+   			Radius (mi): <input type="text" name="radius" id="radius" value="0.5" onChange="updateCircleRadius()" /> <br/><br/>
         </div>
-   		<input type="checkbox" name="address" value="address"> Address<br/><br/>
-        <input type="checkbox" name="house_size" value="house_size"> House Size<br/><br/>
-        <input type="checkbox" name="lot_size" value="lot_size"> Lot Size<br/><br/>
-        <input type="checkbox" name="bedrooms" value="bedrooms"> Number of Bedrooms for the closest house<br/><br/>
-        <input type="checkbox" name="bathrooms" value="bathrooms"> Number of Bedrooms for the closest house<br/><br/>
-        <input type="checkbox" name="year_built" value="year_built"> Year the closest house was built<br/><br/>
-        <input type="checkbox" name="bedrooms" value="Bedrooms"> Number of bedrooms within a half mile radius<br/><br/>   
-        <input type="submit" value="Submit" name="Submit"/>
-   </form>
+        <div>
+        	<input type="checkbox" name="bedrooms" id="bedrooms" checked="yes"> Nearby Bedrooms<br/><br/>   
+        </div>
+        <div>
+        	<input type="checkbox" name="houses" id="houses" checked="yes"> Number of Buildings<br/><br/>   
+        </div>
+   		<div>
+        	<input type="checkbox" name="address" id="address" checked="yes"> Address of the closest house<br/><br/>
+        </div>
+        <div>
+        	<input type="checkbox" name="house_size" id="house_size" checked="yes"> House Size of the closest house<br/><br/>
+        </div>
+        <div>
+        	<input type="checkbox" name="lot_size" id="lot_size" checked="yes"> Lot Size of the closest house<br/><br/>
+        </div>
+        <div>
+        	<input type="checkbox" name="br" id="br" checked="yes"> Number of Bedrooms for the closest house<br/><br/>
+        </div>
+        <div>
+        	<input type="checkbox" name="bathrooms" id="bathrooms" checked="yes"> Number of Bedrooms for the closest house<br/><br/>
+        </div>
+        <div>
+        	<input type="checkbox" name="year_built" id="year_built" checked="yes"> Year the closest house was built<br/><br/>
+        </div>
    <br>
    		
 </div>
