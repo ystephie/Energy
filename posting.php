@@ -11,11 +11,21 @@ $longitude = $_POST["longitude"];
 </head>
 <body style="background: rgb(255, 255, 255) url(images/012008_background.jpg) repeat scroll top left; margin: 0pt;">
 
-<h1 align="center"> Results are in </h1>
-
-<h2 align="center">Basic Information</h2>
-
-<div align="center"class="result">
+<div id="options">
+   <h3 align="center">Options to desplay on info windows</h3>
+   <br/>
+   <form method="post" action="address.php">
+        <input type="checkbox" name="bedrooms" value="Bedrooms"> I want to know the number of bedrooms within a half mile radius<br/><br/>
+        <input type="checkbox" name="energy" value="AveEnergy"> I want to know the average energy of houses within a half mile radius<br/><br/>   
+        <input type="submit" value="Submit" name="Submit"/>
+   </form>
+   <br>
+   		
+</div>
+<div id="main_results">
+	<h1 align="center"> Energy Calculator </h1>
+	<p align="center"> Results are in</p>
+	<div align="center" class="result">
 	
 <?php
 $con = mysql_connect("lager.cs.berkeley.edu","jeffrey.nieh","housedata");
@@ -43,6 +53,7 @@ while($row = mysql_fetch_array($result)) {
             	<th>Year Built</th>
 			</tr>
 		";
+		$first=false;
 	}
 	if ($alternate) {
   		echo "<tr>
@@ -76,8 +87,8 @@ mysql_close($con);
 ?>
 	</table>
 </div>
-
 <center><a href="index.html">Lets do it again!</a></center>
+</div>
 
 
 </body>
