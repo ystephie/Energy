@@ -34,62 +34,86 @@
 		}
 		
 		function placeMarker(position, map) {
-			if (focusInfoWindow) {
-				focusInfoWindow.close();
-			}
-			var marker = new google.maps.Marker({
-				position: position,
-			    map: map,
-			    draggable: true,
-			    title: "Latitude: " + position.lat() + "; Longitude: " + position.lng()
-			});
-			var contentString = "Pending...";
-			var infoWindow = new google.maps.InfoWindow({
+    		if (focusInfoWindow) {
+    			focusInfoWindow.close();
+    		}
+    		var marker = new google.maps.Marker({
+    			position: position,
+    		    map: map,
+    		    draggable: true,
+    		    title: "Latitude: " + position.lat() + "; Longitude: " + position.lng()
+    		});
+    		var contentString = "Pending...";
+    		var infoWindow = new google.maps.InfoWindow({
 				content: contentString
 			});
-			focusInfoWindow = infoWindow;
-			focusCircle.bindTo("center", marker, "position");
-			focusCircle.setVisible(true);
-			infoWindow.open(map,marker);
-			google.maps.event.addListener(marker, "click", 
-				function() {
-					if (focusInfoWindow) {
+    		focusInfoWindow = infoWindow;
+    		focusCircle.bindTo("center", marker, "position");
+    		focusCircle.setVisible(true);
+    		infoWindow.open(map,marker);
+			queryDB(marker);
+    		google.maps.event.addListener(marker, "click", 
+    			function() {
+    				if (focusInfoWindow) {
+    					focusInfoWindow.close();
+    				}
+    				infoWindow.open(map,marker);
+    				focusInfoWindow = infoWindow;
+    				queryDB(marker);
+    				focusCircle.bindTo("center", marker, "position");
+    				focusCircle.setVisible(true);
+    			}
+    		);
+    		google.maps.event.addListener(marker, "rightclick", 
+    			function () {
+    				this.setMap(null);
+    				if (focusInfoWindow) {
+    					focusInfoWindow.close();
+    				}
+    				infoWindow.close();
+    				infoWindow.setMap(null);
+    				focusCircle.setVisible(false);
+    			}
+    		);
+    		google.maps.event.addListener(marker, "position_changed", 
+    			function () {
+    				if (focusInfoWindow) {
 						focusInfoWindow.close();
 					}
-					infoWindow.open(map,marker);
-					focusInfoWindow = infoWindow;
-					focusCircle.bindTo("center", marker, "position");
-					focusCircle.setVisible(true);
-				}
-			);
-			google.maps.event.addListener(marker, "rightclick", 
-				function (marker) {
-					this.setMap(null);
-					focusInfoWindow.close();
-					infoWindow.close();
-					infoWindow.setMap(null);
-					focusCircle.setVisible(false);
-				}
-			);
-			map.panTo(position);
-			
-			if (window.XMLHttpRequest) {// code for IE7+, Firefox, Chrome, Opera, Safari
-				xmlhttp=new XMLHttpRequest();
-			} else { // code for IE6, IE5
-				xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
-			}
-			xmlhttp.onreadystatechange=
-				function() {
-			  		if (xmlhttp.readyState==4 && xmlhttp.status==200) {
-			    		contentString = xmlhttp.responseText;
-			    		infoWindow.setContent(contentString);
-			    	}
-			  	}
-			xmlhttp.open("POST", "request_house_data.php", true);
-			xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+    				infoWindow.open(map,marker);
+    				focusInfoWindow = infoWindow;
+    				queryDB(marker);
+    				focusCircle.bindTo("center", marker, "position");
+    				focusCircle.setVisible(true);
+    			}
+    		);
+    		google.maps.event.addListener(infoWindow, "closeclick", function () {focusCircle.setVisible(false)});
+    		map.panTo(position);
+    			
+    	}
+		
+		function queryDB(marker) {
+    		focusInfoWindow.setContent("Pending...");
+			var position = marker.getPosition();
+    		if (window.XMLHttpRequest) {// code for IE7+, Firefox, Chrome, Opera, Safari
+    			xmlhttp=new XMLHttpRequest();
+    		} else { // code for IE6, IE5
+    			xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+    		}
+    		xmlhttp.onreadystatechange=
+    			function() {
+    		  		if (xmlhttp.readyState==4 && xmlhttp.status==200) {
+    		    		var contentString = xmlhttp.responseText;
+    		    		focusInfoWindow.setContent(contentString);
+    		    	}
+    		  	}
+    		xmlhttp.open("POST", "request_house_data.php", true);
+    		xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
 			var radius = document.getElementById("radius").value;
-			xmlhttp.send("latitude=" + position.lat() + "&longitude=" + position.lng() + "&radius=" + radius + "&bedrooms" + document.getElementById("bedrooms").checked + "&houses=" + document.getElementById("houses").checked + "&address=" + document.getElementById("address").checked + "&house_size=" + document.getElementById("house_size").checked + "&lot_size=" + document.getElementById("lot_size").checked + "&br=" + document.getElementById("br").checked + "&bathrooms=" + document.getElementById("bathrooms").checked + "&year_built=" + document.getElementById("year_built").checked);
-		}
+			xmlhttp.send("latitude=" + position.lat() + "&longitude=" + position.lng() + "&radius=" + radius + "&bedrooms=" + document.getElementById("bedrooms").checked + "&houses=" + document.getElementById("houses").checked + "&address=" + document.getElementById("address").checked + "&house_size=" + document.getElementById("house_size").checked + "&lot_size=" + document.getElementById("lot_size").checked + "&br=" + document.getElementById("br").checked + "&bathrooms=" + document.getElementById("bathrooms").checked + "&year_built=" + document.getElementById("year_built").checked);
+    	}
+			
+	
 		
 		function updateCircleRadius() {
 			focusCircle.setRadius(document.getElementById("radius").value * 1609.344);
@@ -99,7 +123,7 @@
 <body onLoad="initialize()" style="background: rgb(255, 255, 255) url(images/012008_background.jpg) repeat scroll top left; margin: 0pt;">
 
 <div id="options">
-   <h3 align="center">Options to desplay on info windows</h3>
+   <h3 align="center">Options to display on info windows</h3>
    <br/>
    		<div>
    			Radius (mi): <input type="text" name="radius" id="radius" value="0.5" onChange="updateCircleRadius()" /> <br/><br/>
@@ -114,16 +138,16 @@
         	<input type="checkbox" name="address" id="address" checked="yes"> Address of the closest house<br/><br/>
         </div>
         <div>
-        	<input type="checkbox" name="house_size" id="house_size" checked="yes"> House Size of the closest house<br/><br/>
+        	<input type="checkbox" name="house_size" id="house_size" checked="yes"> House Size of the closest house (sq. ft.)<br/><br/>
         </div>
         <div>
-        	<input type="checkbox" name="lot_size" id="lot_size" checked="yes"> Lot Size of the closest house<br/><br/>
+        	<input type="checkbox" name="lot_size" id="lot_size" checked="yes"> Lot Size of the closest house (sq. ft.)<br/><br/>
         </div>
         <div>
         	<input type="checkbox" name="br" id="br" checked="yes"> Number of Bedrooms for the closest house<br/><br/>
         </div>
         <div>
-        	<input type="checkbox" name="bathrooms" id="bathrooms" checked="yes"> Number of Bedrooms for the closest house<br/><br/>
+        	<input type="checkbox" name="bathrooms" id="bathrooms" checked="yes"> Number of Bathrooms for the closest house<br/><br/>
         </div>
         <div>
         	<input type="checkbox" name="year_built" id="year_built" checked="yes"> Year the closest house was built<br/><br/>
@@ -132,18 +156,20 @@
    		
 </div>
 <div id="main">
-	<h1 align="center"> Energy Calculator </h1>
-	<p align="center"> Please input a longitude and latitude </p>
+	<h1 align="center"> Residential Data Mapping Tool </h1>
+	<p align="center"> Please input a latitude and longitude or address for a specific location. <br>
+     Or simply click on the map to start!</p>
     
     <center><div id="latlong">
 		<form method="post" action="posting.php">
-			Longitude: <input type="text" name="longitude" /> 
-			Latitude: <input type="text" name="latitude" />
+        	Latitude: <input type="text" name="latitude" />
+			Longitude: <input type="text" name="longitude" /> <br>
+            OR
             Address: <input type="text" name="address" />
 			<input type="submit" value ="Submit" name="Submit"/>
 		</form>
 	</div></center>
-    <div id="map_canvas" style="width:730px; height:600px;"></div>
+    <div id="map_canvas" style="width:730px; height:550px;"></div>
     <center><a href="index.html">Remove all Placemarks</a></center>
 </div>
 

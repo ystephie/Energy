@@ -1,7 +1,8 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <?php
-$latitude = $_POST["latitude"];
-$longitude = $_POST["longitude"];
+$latitude = $_POST["latitude"] == ""? "latitude": $_POST["latitude"];
+$longitude = $_POST["longitude"] == ""? "longitude": $_POST["longitude"];
+$address = $_POST["address"];
 ?>
 <html>
 <head>
@@ -17,8 +18,9 @@ $longitude = $_POST["longitude"];
 </div>
 -->
 <div id="main_result">
-	<h1 align="center"> Energy Calculator </h1>
+	<h1 align="center">Residential Data Mapping Tool </h1>
 	<p align="center"> Results are in</p>
+    <center><a href="index.html">Lets do it again!</a></center>
 	<div align="center" class="result">
 	
 <?php
@@ -30,7 +32,7 @@ if (!$con)
 
 mysql_select_db("housedata", $con);
 
-$result = mysql_query("SELECT * FROM house_data H, location_data L WHERE H.zpid=L.zpid AND L.longitude=$longitude AND L.latitude=$latitude");
+$result = mysql_query("SELECT * FROM house_data as H, location_data as L WHERE (H.zpid=L.zpid) AND ((H.address='".$address."') AND (longitude=$longitude AND latitude=$latitude))");
 $first=true;
 $alternate=true;
 while($row = mysql_fetch_array($result)) {
