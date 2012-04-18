@@ -1,14 +1,13 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <?php
-$latitude = $_POST["latitude"] == ""? "latitude": $_POST["latitude"];
-$longitude = $_POST["longitude"] == ""? "longitude": $_POST["longitude"];
-$address = $_POST["address"];
+$latitude = $_POST["latitude"];
+$longitude = $_POST["longitude"];
 ?>
 <html>
 <head>
 <link rel="stylesheet" type="text/css" href="stylesheet/energy.css" />
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Energy Calculator</title>
+<title>Residential Data Mapping Tool</title>
 </head>
 <body style="background: rgb(255, 255, 255) url(images/012008_background.jpg) repeat scroll top left; margin: 0pt;">
 <!--
@@ -32,7 +31,7 @@ if (!$con)
 
 mysql_select_db("housedata", $con);
 
-$result = mysql_query("SELECT * FROM house_data as H, location_data as L WHERE (H.zpid=L.zpid) AND ((H.address='".$address."') AND (longitude=$longitude AND latitude=$latitude))");
+$result = mysql_query("SELECT * FROM house_data as H, location_data as L LEFT JOIN energy_consump as E ON L.zpid=E.zpid WHERE H.zpid=L.zpid AND longitude=$longitude AND latitude=$latitude");
 $first=true;
 $alternate=true;
 while($row = mysql_fetch_array($result)) {
@@ -47,6 +46,7 @@ while($row = mysql_fetch_array($result)) {
             	<th>Bedrooms</th>
             	<th>Bathrooms</th>
             	<th>Year Built</th>
+				<th>Annual Energy (kWh)</th>
 			</tr>
 		";
 		$first=false;
@@ -61,6 +61,7 @@ while($row = mysql_fetch_array($result)) {
             <td>" . $row["bedrooms"] . "</td>
             <td>" . $row["bathrooms"] . "</td>
             <td>" . $row["year_built"] . "</td>
+			<td>" . $row["annual_energy"] . "</td>
 		</tr>";
 	} else {
 		echo "<tr class='alt'>
@@ -72,6 +73,7 @@ while($row = mysql_fetch_array($result)) {
             <td>" . $row["bedrooms"] . "</td>
             <td>" . $row["bathrooms"] . "</td>
             <td>" . $row["year_built"] . "</td>
+			<td>" . $row["annual_energy"] . "</td>
 		</tr>";
 	}
 	$alternate=!$alternate;

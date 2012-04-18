@@ -90,7 +90,7 @@ a:visited{
 /*navigation*/
 #options {
 	padding-right:30px;
-   	position: fixed;
+   	position: absolute;
    	width: 210px;
    	height: 100%;
    	margin: 0;
@@ -106,7 +106,6 @@ a:visited{
 	border-bottom: 2px dashed rgb(154,192,137);
 	border-left: 2px dashed rgb(154,192,137);
 	border-right: 2px dashed rgb(154,192,137);
-	background-color:rgb(154,192,137);
 }
 
 #range {
@@ -114,7 +113,6 @@ a:visited{
 	border-bottom: 2px dashed rgb(154,192,137);
 	border-left: 2px dashed rgb(154,192,137);
 	border-right: 2px dashed rgb(154,192,137);
-	background-color:rgb(154,192,137);
 }
 
 #single {
@@ -122,11 +120,9 @@ a:visited{
 	border-bottom: 2px dashed rgb(154,192,137);
 	border-left: 2px dashed rgb(154,192,137);
 	border-right: 2px dashed rgb(154,192,137);
-	background-color:rgb(154,192,137);
 }
 /*map*/
  #map_canvas {
-	border-bottom:50px solid rgb(154,192,137);
 }
 html{
 	height:100%;
@@ -141,4 +137,10 @@ html{
 	float: left; 
 	text-align: center; 
 	background: url(../images/buttons.png) no-repeat; 
+}
+/* footer */
+#footer{
+	font-family: ‘Trebuchet MS’, Helvetica, sans-serif;
+	color: rgb(154,192,137);
+	border-top:dotted rgb(154,192,137);
 }

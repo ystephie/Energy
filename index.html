@@ -114,7 +114,7 @@
     		xmlhttp.open("POST", "request_house_data.php", true);
     		xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
 			var radius = document.getElementById("radius").value;
-			xmlhttp.send("latitude=" + position.lat() + "&longitude=" + position.lng() + "&radius=" + radius + "&bedrooms=" + document.getElementById("bedrooms").checked + "&houses=" + document.getElementById("houses").checked + "&r_units=" + document.getElementById("r_units").checked + "&s_units=" + document.getElementById("s_units").checked + "&address=" + document.getElementById("address").checked + "&house_size=" + document.getElementById("house_size").checked + "&lot_size=" + document.getElementById("lot_size").checked + "&br=" + document.getElementById("br").checked + "&bathrooms=" + document.getElementById("bathrooms").checked + "&year_built=" + document.getElementById("year_built").checked);
+			xmlhttp.send("latitude=" + position.lat() + "&longitude=" + position.lng() + "&radius=" + radius + "&bedrooms=" + document.getElementById("bedrooms").checked + "&houses=" + document.getElementById("houses").checked + "&r_units=" + document.getElementById("r_units").checked + "&s_units=" + document.getElementById("s_units").checked + "&address=" + document.getElementById("address").checked + "&house_size=" + document.getElementById("house_size").checked + "&lot_size=" + document.getElementById("lot_size").checked + "&br=" + document.getElementById("br").checked + "&bathrooms=" + document.getElementById("bathrooms").checked + "&year_built=" + document.getElementById("year_built").checked + "&s_energy=" + document.getElementById("s_energy").checked);
     	}
 			
 	
@@ -177,7 +177,7 @@
         <h4>Area Options:</h4>
         <div id="range">
             <div>
-                Radius (mi): <input type="text" name="radius" id="radius" value="0.5" onChange="updateCircleRadius()" /> <br/><br/>
+                Radius (mi): <input type="text" name="radius" id="radius" value="0.5" onChange="updateCircleRadius()" onBlur="updateCircleRadius()" /> <br/><br/>
             </div>
             <div>
                 <input type="checkbox" name="bedrooms" id="bedrooms" checked=true> Bedrooms<br/><br/>   
@@ -212,8 +212,10 @@
             <div>
                 <input type="checkbox" name="s_units" id="s_units" checked=true> Units<br/><br/>
             </div>
+            <div>
+            	<input type="checkbox" name="s_energy" id="s_energy" checked=false> Energy (kWh)<br/><br/>	
+            </div>
    		</div>
-   <br>
    		
 </div>
 <div id="main">
@@ -224,15 +226,23 @@
     <center><div id="latlong">
 		<form method="post" action="posting.php">
         	Latitude: <input type="text" name="latitude" />
-			Longitude: <input type="text" name="longitude" /> <br>
-            OR
-            Address: <input type="text" name="address" />
+			Longitude: <input type="text" name="longitude" />
 			<input type="submit" value ="Submit" name="Submit"/>
 		</form>
 	</div></center>
-    <div id="map_canvas" style="width:730px; height:550px;"></div>
+    <div id="map_canvas" style="width:730px; height:600px;"></div>
+    <center><div id="latlong">
+		<form method="post" action="posting_A.php">
+			Address: <input type="text" name="address" />
+    		<input type="submit" value ="Submit" name="Submit"/>
+		</form>
+	</div></center>
     <center><a href="index.html">Remove all Placemarks</a></center>
+    <div id="footer">
+		<p align="center">Thank you for using our tool- JeffNSteph</p>
+	</div>
 </div>
+
 
 
 
