@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <link rel="stylesheet" type="text/css" href="stylesheet/energy.css" />
-<title>Energy Calculator</title>
+<title>Residential Data Mapping Tool</title>
 <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
     <script type="text/javascript"
       src="http://maps.googleapis.com/maps/api/js?key=AIzaSyAZU3-xCpzg-ru4WOCzl1n9RNssVY9j55A&sensor=false">
@@ -47,6 +47,7 @@
     		var infoWindow = new google.maps.InfoWindow({
 				content: contentString
 			});
+			infoWindow.bindTo("position", marker);
     		focusInfoWindow = infoWindow;
     		focusCircle.bindTo("center", marker, "position");
     		focusCircle.setVisible(true);
@@ -92,9 +93,12 @@
     			
     	}
 		
-		function queryDB(marker) {
+		function queryDB() {
+			if (!focusInfoWindow) {
+				return;
+			}
     		focusInfoWindow.setContent("Pending...");
-			var position = marker.getPosition();
+			var position = focusInfoWindow.getPosition();
     		if (window.XMLHttpRequest) {// code for IE7+, Firefox, Chrome, Opera, Safari
     			xmlhttp=new XMLHttpRequest();
     		} else { // code for IE6, IE5
@@ -110,13 +114,50 @@
     		xmlhttp.open("POST", "request_house_data.php", true);
     		xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
 			var radius = document.getElementById("radius").value;
-			xmlhttp.send("latitude=" + position.lat() + "&longitude=" + position.lng() + "&radius=" + radius + "&bedrooms=" + document.getElementById("bedrooms").checked + "&houses=" + document.getElementById("houses").checked + "&address=" + document.getElementById("address").checked + "&house_size=" + document.getElementById("house_size").checked + "&lot_size=" + document.getElementById("lot_size").checked + "&br=" + document.getElementById("br").checked + "&bathrooms=" + document.getElementById("bathrooms").checked + "&year_built=" + document.getElementById("year_built").checked);
+			xmlhttp.send("latitude=" + position.lat() + "&longitude=" + position.lng() + "&radius=" + radius + "&bedrooms=" + document.getElementById("bedrooms").checked + "&houses=" + document.getElementById("houses").checked + "&r_units=" + document.getElementById("r_units").checked + "&s_units=" + document.getElementById("s_units").checked + "&address=" + document.getElementById("address").checked + "&house_size=" + document.getElementById("house_size").checked + "&lot_size=" + document.getElementById("lot_size").checked + "&br=" + document.getElementById("br").checked + "&bathrooms=" + document.getElementById("bathrooms").checked + "&year_built=" + document.getElementById("year_built").checked);
     	}
 			
 	
 		
 		function updateCircleRadius() {
 			focusCircle.setRadius(document.getElementById("radius").value * 1609.344);
+		}
+		function updateCheckMarks() {
+			if (document.getElementById("both").selected) {
+				document.getElementById("bedrooms").checked=true;
+				document.getElementById("houses").checked=true;
+				document.getElementById("r_units").checked=true;
+				document.getElementById("address").checked=true;
+				document.getElementById("house_size").checked=true;
+				document.getElementById("lot_size").checked=true;
+				document.getElementById("br").checked=true;
+				document.getElementById("bathrooms").checked=true;
+				document.getElementById("year_built").checked=true;
+				document.getElementById("s_units").checked=true;
+			} else if (document.getElementById("area").selected) {
+				document.getElementById("bedrooms").checked=true;
+				document.getElementById("houses").checked=true;
+				document.getElementById("r_units").checked=true;
+				document.getElementById("address").checked=false;
+				document.getElementById("house_size").checked=false;
+				document.getElementById("lot_size").checked=false;
+				document.getElementById("br").checked=false;
+				document.getElementById("bathrooms").checked=false;
+				document.getElementById("year_built").checked=false;
+				document.getElementById("s_units").checked=false;
+			} else if (document.getElementById("single").selected) {
+				document.getElementById("bedrooms").checked=false;
+				document.getElementById("houses").checked=false;
+				document.getElementById("r_units").checked=false;
+				document.getElementById("address").checked=true;
+				document.getElementById("house_size").checked=true;
+				document.getElementById("lot_size").checked=true;
+				document.getElementById("br").checked=true;
+				document.getElementById("bathrooms").checked=true;
+				document.getElementById("year_built").checked=true;
+				document.getElementById("s_units").checked=true;
+			}
+			queryDB();
 		}
     </script>
 </head>
@@ -125,33 +166,53 @@
 <div id="options">
    <h3 align="center">Options to display on info windows</h3>
    <br/>
-   		<div>
-   			Radius (mi): <input type="text" name="radius" id="radius" value="0.5" onChange="updateCircleRadius()" /> <br/><br/>
+   		<div id="type">
+        	<label>Choose one of the following:</label>
+        	<select onChange="updateCheckMarks()" id="selection">
+            	<option id="both">Both</option>
+                <option id="area">Area</option>
+                <option id="single">Single</option>
+           	</select>
         </div>
-        <div>
-        	<input type="checkbox" name="bedrooms" id="bedrooms" checked="yes"> Nearby Bedrooms<br/><br/>   
+        <h4>Area Options:</h4>
+        <div id="range">
+            <div>
+                Radius (mi): <input type="text" name="radius" id="radius" value="0.5" onChange="updateCircleRadius()" /> <br/><br/>
+            </div>
+            <div>
+                <input type="checkbox" name="bedrooms" id="bedrooms" checked=true> Bedrooms<br/><br/>   
+            </div>
+            <div>
+                <input type="checkbox" name="houses" id="houses" checked=true> Buildings<br/><br/>   
+            </div>
+            <div>
+                <input type="checkbox" name="r_units" id="r_units" checked=true> Units<br/><br/>   
+            </div>
         </div>
-        <div>
-        	<input type="checkbox" name="houses" id="houses" checked="yes"> Number of Buildings<br/><br/>   
-        </div>
-   		<div>
-        	<input type="checkbox" name="address" id="address" checked="yes"> Address of the closest house<br/><br/>
-        </div>
-        <div>
-        	<input type="checkbox" name="house_size" id="house_size" checked="yes"> House Size of the closest house (sq. ft.)<br/><br/>
-        </div>
-        <div>
-        	<input type="checkbox" name="lot_size" id="lot_size" checked="yes"> Lot Size of the closest house (sq. ft.)<br/><br/>
-        </div>
-        <div>
-        	<input type="checkbox" name="br" id="br" checked="yes"> Number of Bedrooms for the closest house<br/><br/>
-        </div>
-        <div>
-        	<input type="checkbox" name="bathrooms" id="bathrooms" checked="yes"> Number of Bathrooms for the closest house<br/><br/>
-        </div>
-        <div>
-        	<input type="checkbox" name="year_built" id="year_built" checked="yes"> Year the closest house was built<br/><br/>
-        </div>
+        <h4>Single Options:</h4>
+        <div id="single">
+            <div>
+                <input type="checkbox" name="address" id="address" checked=true> Address<br/><br/>
+            </div>
+            <div>
+                <input type="checkbox" name="house_size" id="house_size" checked=true> House Size (sq. ft.)<br/><br/>
+            </div>
+            <div>
+                <input type="checkbox" name="lot_size" id="lot_size" checked=true> Lot Size (sq. ft.)<br/><br/>
+            </div>
+            <div>
+                <input type="checkbox" name="br" id="br" checked=true> Bedrooms<br/><br/>
+            </div>
+            <div>
+                <input type="checkbox" name="bathrooms" id="bathrooms" checked=true> Bathrooms<br/><br/>
+            </div>
+            <div>
+                <input type="checkbox" name="year_built" id="year_built" checked=true> Year built<br/><br/>
+            </div>
+            <div>
+                <input type="checkbox" name="s_units" id="s_units" checked=true> Units<br/><br/>
+            </div>
+   		</div>
    <br>
    		
 </div>
